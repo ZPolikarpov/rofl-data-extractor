@@ -1,38 +1,5 @@
 import json
 import os
-import sqlite3
-
-CREATE_GAME_TABLE = """CREATE TABLE games
-                      (game_id INTEGER PRIMARY KEY,
-                       game_length REAL,
-                       game_mins REAL,
-                       surrender INTEGER,
-                       early_surrender INTEGER
-                       )"""
-CREATE_PLAYER_TABLE = """CREATE TABLE playerGame
-                      (player_id TEXT,
-                       game_id TEXT,
-                       champ TEXT,
-                       win INTEGER,
-                       team TEXT,
-                       team_position TEXT,
-                       name TEXT,
-                       assists INTEGER,
-                       kills INTEGER,
-                       exp REAL,
-                       early_surrender INTEGER,
-                       surrender INTEGER,
-                       gold_earned REAL,
-                       gold_spent REAL,
-                       level INTEGER,
-                       longest_time_spent_living REAL,
-                       cs INTEGER,
-                       deaths INTEGER,
-                       dmg_dealt FLOAT,
-                       vision_score INTEGER
-                       )"""
-
-POSITIONS = ["TOP", "JUNGLE", "MID", "ADC", "SUPPORT"]
 
 def get_metadata(filename):
     with open(filename, "rb") as f:
@@ -114,21 +81,26 @@ def insert_game(cur, org, metadata, game_id):
             {deaths},
             {dmg_dealt},
             {vision_score})""")
+        
+def write_json(target_path, target_file, data):
+    if not os.path.exists(target_path):
+        try:
+            os.makedirs(target_path)
+        except Exception as e:
+            print(e)
+            raise
+    with open(os.path.join(target_path, target_file), 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
     # root_dir = "D:\\LoL Replays\\11.21\\Replays\\"
-    root_dir = "REPLACE THIS WITH DIRECTORY OF LEAGUE OF LEGENDS ROFL FILES HERE"
+    root_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays"
+    json_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays in JSON"
     
     counts = {}
 
     i = 0
     total = len(os.listdir(root_dir))
-
-    con = sqlite3.connect("metadata.db")
-    cur = con.cursor()
-
-    cur.execute(CREATE_GAME_TABLE)
-    cur.execute(CREATE_PLAYER_TABLE)
 
     """
     for root_dir in root_dirs[0:]:
@@ -147,15 +119,13 @@ if __name__ == "__main__":
     """
 
     files = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
-    cur.execute("BEGIN;")
-
+    print(files)
     for fname in files:
         game_id = os.path.basename(fname).split(".")[0].split("-")[1]
         org, metadata = get_metadata(fname)
-        insert_game(cur, org, metadata, game_id)
-        print(i)
+        write_json(json_dir, str(i)+".json", metadata)
+        print(fname, i)
         i+= 1
-    cur.execute("COMMIT;")
-    con.close()
+
 
     print(counts)
