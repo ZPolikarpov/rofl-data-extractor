@@ -93,6 +93,14 @@ def write_json(target_path, target_file, data):
     with open(os.path.join(target_path, target_file), 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+def json_to_excel(excel_path, json_files):
+    j = 0
+    for fname in json_files:
+        with open(fname) as json_file:
+            df = pd.read_json(json_file)
+            df.to_excel(excel_path + "\\" + str(j) + '.xlsx')
+        j+= 1
+
 if __name__ == "__main__":
     # root_dir = "D:\\LoL Replays\\11.21\\Replays\\"
     root_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays"
@@ -130,9 +138,6 @@ if __name__ == "__main__":
         i+= 1
 
     json_files = [os.path.join(json_dir, f) for f in os.listdir(json_dir)]
-    for fname in json_files:
-        with open(fname) as json_file:
-            df = pd.read_json(json_file)
-            df.to_excel(xlsx_dir + "\\" + str(j) + '.xlsx')
-        j+= 1
+    json_to_excel(xlsx_dir, json_files)
+
     print(counts)
