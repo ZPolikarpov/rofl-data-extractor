@@ -1,6 +1,7 @@
 import json
 import os
 import pandas as pd
+import gspread
 
 def get_metadata(filename):
     with open(filename, "rb") as f:
@@ -46,6 +47,9 @@ def json_to_excel(excel_path, json_files):
         j+= 1
 
 if __name__ == "__main__":
+
+    gc = gspread.service_account()
+
     # root_dir = "D:\\LoL Replays\\11.21\\Replays\\"
     root_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays"
     json_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays in JSON"
@@ -84,4 +88,7 @@ if __name__ == "__main__":
     json_files = [os.path.join(json_dir, f) for f in os.listdir(json_dir)]
     json_to_excel(xlsx_dir, json_files)
 
+    sh = gc.open("Bot Test")
+
+    print(sh.sheet1.get('A1'))
     print(counts)
