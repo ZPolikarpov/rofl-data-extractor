@@ -26,62 +26,6 @@ def get_metadata(filename):
         #champs = [s["SKIN"] for s in stats_json]
 
         return replay_metadata, stats_json
-
-def insert_game(cur, org, metadata, game_id):
-    surrender = any([m["GAME_ENDED_IN_SURRENDER"] for m in metadata])
-    surrender = 1 if surrender else 0
-    early_surrender = any([m["GAME_ENDED_IN_EARLY_SURRENDER"] for m in metadata])
-    early_surrender = 1 if early_surrender else 0
-
-    cur.execute(f"""INSERT INTO games VALUES(
-        {game_id},
-        {org["gameLength"]},
-        {org["gameLength"] / (1000 * 60)},
-        {surrender},
-        {early_surrender})""")
-
-    for i, player in enumerate(metadata):
-        player_id = player["ID"]
-        champ = player["SKIN"]
-        win = player["WIN"]
-        team = player["TEAM"]
-        team_position = POSITIONS[i % 5]
-        name = player["NAME"]
-        assists = player["ASSISTS"]
-        kills = player["CHAMPIONS_KILLED"]
-        exp = player["EXP"]
-        early_surrender = player["GAME_ENDED_IN_EARLY_SURRENDER"]
-        surrender = player["GAME_ENDED_IN_SURRENDER"]
-        gold_earned = player["GOLD_EARNED"]
-        gold_spent = player["GOLD_SPENT"]
-        level = player["LEVEL"]
-        longest_time_spent_living = player["LONGEST_TIME_SPENT_LIVING"]
-        cs = player["MINIONS_KILLED"] + player["NEUTRAL_MINIONS_KILLED"]
-        deaths = player["NUM_DEATHS"]
-        dmg_dealt = player["TOTAL_DAMAGE_DEALT_TO_CHAMPIONS"]
-        vision_score = player["VISION_SCORE"]
-        
-        cur.execute(f"""INSERT INTO playerGame VALUES(
-            {player_id},
-            '{game_id}',
-            '{champ}',
-            {1 if win == "Win" else 0},
-            '{team}',
-            '{team_position}',
-            '{name}',
-            {assists},
-            {kills},
-            {exp},
-            {1 if early_surrender == "1" else 0},
-            {1 if surrender == "1" else 0},
-            {gold_earned},
-            {gold_spent},
-            {level},
-            {longest_time_spent_living},
-            {cs},
-            {deaths},
-            {dmg_dealt},
-            {vision_score})""")
         
 def write_json(target_path, target_file, data):
     if not os.path.exists(target_path):
