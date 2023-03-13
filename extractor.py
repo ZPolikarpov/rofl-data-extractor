@@ -1,5 +1,6 @@
 import json
 import os
+import pandas as pd
 
 def get_metadata(filename):
     with open(filename, "rb") as f:
@@ -96,10 +97,12 @@ if __name__ == "__main__":
     # root_dir = "D:\\LoL Replays\\11.21\\Replays\\"
     root_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays"
     json_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays in JSON"
+    xlsx_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays in Excel"
     
     counts = {}
 
     i = 0
+    j = 0
     total = len(os.listdir(root_dir))
 
     """
@@ -118,14 +121,18 @@ if __name__ == "__main__":
                 for k, v in sorted(counts.items(), key=lambda item: item[1], reverse=True)}
     """
 
-    files = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
-    print(files)
-    for fname in files:
+    replay_files = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
+    for fname in replay_files:
         game_id = os.path.basename(fname).split(".")[0].split("-")[1]
         org, metadata = get_metadata(fname)
         write_json(json_dir, str(i)+".json", metadata)
         print(fname, i)
         i+= 1
 
-
+    json_files = [os.path.join(json_dir, f) for f in os.listdir(json_dir)]
+    for fname in json_files:
+        with open(fname) as json_file:
+            df = pd.read_json(json_file)
+            df.to_excel(xlsx_dir + "\\" + str(j) + '.xlsx')
+        j+= 1
     print(counts)
