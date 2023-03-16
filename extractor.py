@@ -38,6 +38,12 @@ def write_json(target_path, target_file, data):
     with open(os.path.join(target_path, target_file), 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+def read_json(target_path, target_file):
+    if not os.path.exists(target_path):
+        return
+    with open(os.path.join(target_path, target_file)) as f:
+        return json.load(f)
+
 def json_to_excel(excel_path, json_files):
     j = 0
     for fname in json_files:
@@ -46,19 +52,11 @@ def json_to_excel(excel_path, json_files):
             df.to_excel(excel_path + "\\" + str(j) + '.xlsx')
         j+= 1
 
-if __name__ == "__main__":
-
-    gc = gspread.service_account()
-
-    # root_dir = "D:\\LoL Replays\\11.21\\Replays\\"
-    root_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays"
-    json_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays in JSON"
-    xlsx_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays in Excel"
-    
+def get_replay_file_paths(replay_dir):
     counts = {}
 
     i = 0
-    j = 0
+    
     total = len(os.listdir(root_dir))
 
     """
@@ -78,6 +76,24 @@ if __name__ == "__main__":
     """
 
     replay_files = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
+
+    return replay_files
+
+if __name__ == "__main__":
+
+    gc = gspread.service_account()
+
+    # root_dir = "D:\\LoL Replays\\11.21\\Replays\\"
+    root_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays"
+    json_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays in JSON"
+    xlsx_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays in Excel"
+    
+
+    i = 0
+    j = 0
+
+
+    replay_files = get_replay_file_paths(root_dir)
     for fname in replay_files:
         game_id = os.path.basename(fname).split(".")[0].split("-")[1]
         org, metadata = get_metadata(fname)
@@ -91,4 +107,3 @@ if __name__ == "__main__":
     sh = gc.open("Bot Test")
 
     print(sh.sheet1.get('A1'))
-    print(counts)
