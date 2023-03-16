@@ -94,6 +94,65 @@ def onRofl2Json(root_dir, json_dir):
 def initGspread():
     return gspread.service_account()
 
+def pushGameStatsToSheet(gspreadAccount, config):
+    replay_json = read_json(config["json_path"], "0.json")
+    sheet = gspreadAccount.open_by_url(config["gsheet_link"])
+    worksheetTop = sheet.worksheet(config["player_names"]["top"])
+    worksheetJungle = sheet.worksheet(config["player_names"]["jng"])
+    worksheetMid = sheet.worksheet(config["player_names"]["mid"])
+    worksheetBottom = sheet.worksheet(config["player_names"]["bot"])
+    worksheetSupport = sheet.worksheet(config["player_names"]["sup"])
+    insertPlayerStats(worksheetTop, config["player_names"]["top"], replay_json)
+    insertPlayerStats(worksheetJungle, config["player_names"]["jng"], replay_json)
+    insertPlayerStats(worksheetMid, config["player_names"]["mid"], replay_json)
+    insertPlayerStats(worksheetBottom, config["player_names"]["bot"], replay_json)
+    insertPlayerStats(worksheetSupport, config["player_names"]["sup"], replay_json)
+
+
+
+def insertPlayerStats(worksheet, player_name, replay_json):
+
+    for player in replay_json:
+        if player["NAME"] == player_name:
+            champ = player["SKIN"]
+            kills = player["CHAMPIONS_KILLED"]
+            deaths = player["NUM_DEATHS"]
+            assists = player["ASSISTS"]
+            damage_dealt = player["TOTAL_DAMAGE_DEALT_TO_CHAMPIONS"]
+            damage_taken = player["TOTAL_DAMAGE_TAKEN"]
+            wards_placed = player["WARD_PLACED"]
+            wards_destroyed = player["WARD_KILLED"]
+            control_wards = player["VISION_WARDS_BOUGHT_IN_GAME"]
+            gold_earned = player["GOLD_EARNED"]
+            cs = player["MINIONS_KILLED"] + player["NEUTRAL_MINIONS_KILLED"]
+            
+    dataframe = pd.DataFrame(worksheet.get_all_values())
+    rowToFill = findFirstEmptyCellInColumn(dataframe, 3, 23)
+    dataframe.iloc[rowToFill, 3] = champ
+    dataframe.iloc[rowToFill, 4] = kills
+    dataframe.iloc[rowToFill, 5] = deaths
+    dataframe.iloc[rowToFill, 6] = assists
+    dataframe.iloc[rowToFill, 9] = damage_dealt
+    dataframe.iloc[rowToFill, 11] = damage_taken
+    dataframe.iloc[rowToFill, 12] = wards_placed
+    dataframe.iloc[rowToFill, 13] = wards_destroyed
+    dataframe.iloc[rowToFill, 14] = control_wards
+    dataframe.iloc[rowToFill, 15] = gold_earned
+    dataframe.iloc[rowToFill, 16] = cs
+
+    worksheet.update(dataframe.values.tolist())
+
+def findFirstEmptyCellInColumn(dataframe, column, startRow):
+    currentRow = startRow
+    print(dataframe)
+    print(dataframe.loc[currentRow][column])
+    while True:
+        print(currentRow, dataframe.iloc[currentRow][column])
+        if dataframe.iloc[currentRow][column] == "":
+            return currentRow
+        currentRow+= 1
+
+
 if __name__ == "__main__":
 
     gc = gspread.service_account()

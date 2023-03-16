@@ -86,3 +86,4 @@ if __name__ == "__main__":
         if event == "Rofl2Json":
             ex.onRofl2Json(config["replay_path"], config["json_path"])
             gc = ex.initGspread()
+            ex.pushGameStatsToSheet(gc, config)
