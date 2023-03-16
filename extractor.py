@@ -41,7 +41,7 @@ def write_json(target_path, target_file, data):
 def read_json(target_path, target_file):
     if not os.path.exists(os.path.join(target_path, target_file)):
         return
-    with open(os.path.join(target_path, target_file)) as f:
+    with open(os.path.join(target_path, target_file), 'r', encoding='utf-8') as f:
         return json.load(f)
 
 def json_to_excel(excel_path, json_files):
@@ -90,6 +90,9 @@ def rofl_to_json(json_dir, replay_files):
 def onRofl2Json(root_dir, json_dir):
     replay_files = get_replay_file_paths(root_dir)
     rofl_to_json(json_dir, replay_files)
+
+def initGspread():
+    return gspread.service_account()
 
 if __name__ == "__main__":
 
