@@ -79,31 +79,36 @@ def get_replay_file_paths(replay_dir):
 
     return replay_files
 
+def rofl_to_json(json_dir, replay_files):
+    i = 0
+    for fname in replay_files:
+        game_id = os.path.basename(fname).split(".")[0].split("-")[1]
+        org, metadata = get_metadata(fname)
+        write_json(json_dir, str(i)+".json", metadata)
+        i+= 1
+
+def onRofl2Json(root_dir, json_dir):
+    replay_files = get_replay_file_paths(root_dir)
+    rofl_to_json(json_dir, replay_files)
+
 if __name__ == "__main__":
 
     gc = gspread.service_account()
+    sh = gc.open("Bot Test")
+
+    print(sh.sheet1.get('A1'))
 
     # root_dir = "D:\\LoL Replays\\11.21\\Replays\\"
     root_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays"
     json_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays in JSON"
     xlsx_dir = "C:\\Users\\polik\\Desktop\\Visual Studio Code\\Replays in Excel"
     
-
-    i = 0
     j = 0
 
 
     replay_files = get_replay_file_paths(root_dir)
-    for fname in replay_files:
-        game_id = os.path.basename(fname).split(".")[0].split("-")[1]
-        org, metadata = get_metadata(fname)
-        write_json(json_dir, str(i)+".json", metadata)
-        print(fname, i)
-        i+= 1
+    rofl_to_json(json_dir, replay_files)
 
-    json_files = [os.path.join(json_dir, f) for f in os.listdir(json_dir)]
-    json_to_excel(xlsx_dir, json_files)
+    # json_files = [os.path.join(json_dir, f) for f in os.listdir(json_dir)]
+    # json_to_excel(xlsx_dir, json_files)
 
-    sh = gc.open("Bot Test")
-
-    print(sh.sheet1.get('A1'))
