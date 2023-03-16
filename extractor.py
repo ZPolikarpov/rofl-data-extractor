@@ -39,7 +39,7 @@ def write_json(target_path, target_file, data):
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 def read_json(target_path, target_file):
-    if not os.path.exists(target_path):
+    if not os.path.exists(os.path.join(target_path, target_file)):
         return
     with open(os.path.join(target_path, target_file)) as f:
         return json.load(f)
@@ -57,14 +57,14 @@ def get_replay_file_paths(replay_dir):
 
     i = 0
     
-    total = len(os.listdir(root_dir))
+    total = len(os.listdir(replay_dir))
 
     """
-    for root_dir in root_dirs[0:]:
-        files = os.listdir(root_dir)[0:]
+    for replay_dir in replay_dirs[0:]:
+        files = os.listdir(replay_dir)[0:]
         for f in files:
             game_id = f.split(".")[0].split("-")[1]
-            fname = os.path.join(root_dir, f)
+            fname = os.path.join(replay_dir, f)
             for c in get_champs(fname):
                 if not c in counts:
                     counts[c] = 0
@@ -75,7 +75,7 @@ def get_replay_file_paths(replay_dir):
                 for k, v in sorted(counts.items(), key=lambda item: item[1], reverse=True)}
     """
 
-    replay_files = [os.path.join(root_dir, f) for f in os.listdir(root_dir)]
+    replay_files = [os.path.join(replay_dir, f) for f in os.listdir(replay_dir)]
 
     return replay_files
 

@@ -9,7 +9,7 @@ def settings_window():
                 [sg.Button("Submit Config"), sg.Button("Cancel")] ]
 
     # Create the Window
-    window = sg.Window('Config Edit', layout, finalize=True, modal=True)
+    window = sg.Window('Config Edit', layout, finalize=True)
 
     return window
 
@@ -28,23 +28,28 @@ def main_window(configPath, configFileName):
     return window
 
 if __name__ == "__main__":
-    window1, window2 = main_window("data", "config.json"), None
+    window1, window2 = main_window("data\\Configs", "defaultConfig.json"), None
 
     while True:
         window, event, values = sg.read_all_windows()
         if event == sg.WIN_CLOSED or event == 'Exit' or event == 'Cancel':
             window.close()
-            if window == window2:       # if closing win 2, mark as closed
-                window2 = None
+            if window == window2:  
+                window1 = main_window("data\\Configs", "defaultConfig.json")     
+                window2 = None          # if closing win 2, mark as closed
             elif window == window1:     # if closing win 1, exit program
                 break
 
         elif event == 'Change Settings' and not window2:
+            window.close()
+            window1 = None
             window2 = settings_window()
 
         if event == "-IN2-":
             print(values["-IN2-"])
 
         if event == "Submit Config":
-            ex.write_json("data", "config.json", {"replay_path": values["-IN-"]})
-            print(values["-IN-"])
+            ex.write_json("data/Configs", "defaultConfig.json", {"replay_path": values["-IN2-"]})
+            window.close()
+            window1 = main_window("data\\Configs", "defaultConfig.json")
+            window2 = None
