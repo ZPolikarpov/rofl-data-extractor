@@ -38,6 +38,12 @@ def write_json(target_path, target_file, data):
     with open(os.path.join(target_path, target_file), 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+def read_json(target_path, target_file):
+    if not os.path.exists(target_path):
+        return
+    with open(os.path.join(target_path, target_file)) as f:
+        return json.load(f)
+
 def json_to_excel(excel_path, json_files):
     j = 0
     for fname in json_files:
