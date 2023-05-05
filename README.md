@@ -8,8 +8,9 @@ To run the programm
 1. Clone the github project in a directory
 2. adjust your variables:
 root_dir
+
 json_dir
-xslx_dir
+
 
 3. Put .rofl files in root_dir
 4. Open terminal in the rofl-data-extractor directory
