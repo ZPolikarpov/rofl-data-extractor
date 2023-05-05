@@ -13,4 +13,4 @@ xslx_dir
 
 3. Put .rofl files in root_dir
 4. Open terminal in the rofl-data-extractor directory
-5. Execuite "py extractor.py" in your terminal 
+5. Execute "py extractor.py" in your terminal 
